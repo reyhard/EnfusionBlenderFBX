@@ -21,8 +21,6 @@ bl_info = {
     "category" : "Object"
 }
 
-import bpy
-
 from . import auto_load
 
 if "bpy" in locals():
@@ -33,7 +31,6 @@ if "bpy" in locals():
 auto_load.init() # code which automatically register all found classes
 
 def register():
-    print(__name__)
     auto_load.register()
 
 def unregister():

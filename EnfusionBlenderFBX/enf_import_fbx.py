@@ -3,10 +3,9 @@ from sys import argv
 import bpy
 import addon_utils
 
-print("new script launched")
-
 try:
     argv = argv[argv.index("--") + 1:]
+    print("new script launched")
 
     scalefactor = 1
 
@@ -16,9 +15,9 @@ try:
     bpy.ops.preferences.addon_refresh()
 
     # automatically enable enfusion tools
-    if "EnfusionFBXTools" in addons_list_modules:
-        if not ( "EnfusionTools" in bpy.context.preferences.addons.keys() ) :
-            bpy.ops.preferences.addon_enable(module='EnfusionTools')
+    if "EnfusionBlenderFBX2" in addons_list_modules:
+        if not ( "EnfusionBlenderFBX" in bpy.context.preferences.addons.keys() ) :
+            bpy.ops.preferences.addon_enable(module='EnfusionBlenderFBX')
         # import scale factor
         scalefactor = bpy.context.preferences.addons["workbench_export_fbx"].preferences.scalefactor
     
@@ -27,29 +26,15 @@ try:
         global_scale=scalefactor,
         )
 
-    args_obj = dict(
-        # use_image_search=False,
-        )
-
-    args_3ds = dict(
-        # constrain_size=0.0,
-        )
-
     for f in argv:
         ext = os.path.splitext(f)[1].lower()
         if ext == ".fbx":
             bpy.ops.import_scene.fbx(filepath=f, **args_fbx)
             bpy.context.scene['enfusion_filepath'] = f
-        elif ext == ".obj":
-            bpy.ops.import_scene.obj(filepath=f, **args_obj)
-        elif ext == ".3ds":
-            bpy.ops.import_scene.autodesk_3ds(filepath=f, **args_3ds)
         else:
             print("Extension %r is not known!" % ext)
 
 
-    bpy.ops.view3d.enf_objectname()
-    bpy.ops.view3d.sort()
-    bpy.ops.physmat.validate()
+    bpy.ops.view3d.ebt_sort()
 except:
     argv = ""

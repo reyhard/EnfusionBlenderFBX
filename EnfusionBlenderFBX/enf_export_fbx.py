@@ -1,5 +1,6 @@
 import bpy
 from bpy.types import Operator
+from EnfusionBlenderTools.utils import show_message_box
 
 class EnfusionFBXTools_ExportFBX(Operator):
     """Script to export existing file to Workbench"""      # Use this as a tooltip for menu items and buttons.
@@ -23,6 +24,7 @@ class EnfusionFBXTools_ExportFBX(Operator):
         except:
             betterFBX = False
 
+        messageArray = ["Exported current scene to FBX file: " + exportPath]
         if(betterFBX):
             print("Using Better FBX addon for export")
             bpy.ops.better_export.fbx(
@@ -32,6 +34,8 @@ class EnfusionFBXTools_ExportFBX(Operator):
                 my_scale=100/(bpy.context.preferences.addons["EnfusionBlenderFBX"].preferences.scalefactor),
                 use_optimize_for_game_engine=False,
                 use_ignore_armature_node=True)
+                
+            show_message_box(messageArray)
             return {'FINISHED'} 
 
         # The original script
@@ -45,6 +49,8 @@ class EnfusionFBXTools_ExportFBX(Operator):
             global_scale=1/(bpy.context.preferences.addons["EnfusionBlenderFBX"].preferences.scalefactor),
             use_selection=False,
             use_active_collection=False)
+
+        show_message_box(messageArray)
 
         return {'FINISHED'}            # Lets Blender know the operator finished successfully
 
