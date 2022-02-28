@@ -15,7 +15,7 @@
 
 
 #Region ### START Koda GUI section ### Form=
-$Form1 = GUICreate("Workbench Tool Installer", 485, 410, -1, -1)
+$Form1 = GUICreate("Workbench Tool Installer", 485, 270, -1, -1)
 $Group1 = GUICtrlCreateGroup("Blender path", 16, 8, 457, 65)
 $Input_FolderBlender = GUICtrlCreateInput("Input1", 40, 32, 313, 21)
 $Button_SelectBlender = GUICtrlCreateButton("Pick file", 360, 32, 99, 25)
@@ -24,7 +24,7 @@ $Group4 = GUICtrlCreateGroup("Enfusion tools path", 16, 82, 457, 65)
 $Input_FolderTools = GUICtrlCreateInput("Input1", 40, 106, 313, 21)
 $Button_SelectTools = GUICtrlCreateButton("Pick file", 360, 106, 99, 25)
 GUICtrlCreateGroup("", -99, -99, 1, 1)
-$Button_Install = GUICtrlCreateButton("Install", 16, 312, 459, 89)
+$Button_Install = GUICtrlCreateButton("Install", 16, 160, 459, 89)
 GUISetState(@SW_SHOW)
 #EndRegion ### END Koda GUI section ###
 
@@ -139,14 +139,12 @@ Func InstallPlugin()
    If $blenderVersionArray[2] == 0 and $blenderVersionArray[3] > 0 Then
 	  $blenderVersion =  $blenderVersionArray[1] & "." & $blenderVersionArray[2]
    EndIf
-   ; MsgBox($MB_SYSTEMMODAL, "Wersja", $blenderVersionArray[2] & " " & $blenderVersionArray[3] & " " & $blenderVersion )
+   MsgBox($MB_SYSTEMMODAL, "Wersja", $blenderVersionArray[2] & " " & $blenderVersionArray[3] & " " & $blenderVersion )
 
-   $pathToPlugin = _PathFull("Blender Foundation\Blender\" & $blenderVersion & "\scripts\addons\",@AppDataDir)
-   Local $copyStatus1 = FileCopy($exportPath,$pathToPlugin,$FC_OVERWRITE + $FC_CREATEPATH)
-   ; Instal import plugin
-   Local $importFileName = "enf_import_fbx.py"
    ; Instal Enfusion Tools
-   Local $copyStatus3 = FileCopy($toolsPath,$pathToPlugin & "EnfusionBlenderFBX\",$FC_OVERWRITE + $FC_CREATEPATH)
+   $pathToPlugin = _PathFull("Blender Foundation\Blender\" & $blenderVersion & "\scripts\addons\",@AppDataDir)
+   Local $importFileName = "enf_import_fbx.py"
+   Local $copyStatus1 = FileCopy($toolsPath,$pathToPlugin & "EnfusionBlenderFBX\",$FC_OVERWRITE + $FC_CREATEPATH)
 
    ; Handle file association. Since Windows 8 its no longer possible to use ASSOC and register entries are protected by hash
    ; In order to bypass that restriction a 3rd party exe is used https://github.com/DanysysTeam/SFTA
@@ -175,12 +173,7 @@ Func InstallPlugin()
    If $copyStatus1 = 0 Then
 	  $statusString_flag = $MB_SYSTEMMODAL & $MB_ICONERROR
 	  $statusString_title = "Error!"
-	  $statusString_msg = "Export plugin was not installed correctly" & @LF
-   EndIf
-   If $copyStatus2 = 0 Then
-	  $statusString_flag = $MB_SYSTEMMODAL & $MB_ICONERROR
-	  $statusString_title = "Error!"
-	  $statusString_msg = $statusString_msg & "Import plugin was not installed correctly"
+	  $statusString_msg = "Plugin was not installed correctly" & @LF
    EndIf
    If $statusString_title = "" Then
 	  $statusString_flag = $MB_SYSTEMMODAL
