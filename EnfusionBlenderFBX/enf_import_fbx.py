@@ -31,6 +31,7 @@ try:
         if ext == ".fbx":
             bpy.ops.import_scene.fbx(filepath=f, **args_fbx)
             bpy.context.scene['enfusion_filepath'] = f
+            bpy.context.scene.xob_meta_path = f.lower().replace("fbx","xob") + ".meta"
         else:
             print("Extension %r is not known!" % ext)
 
