@@ -133,7 +133,7 @@ Func InstallPlugin()
    If $blenderVersionArray[2] == 0 and $blenderVersionArray[3] == 0 Then
 	  $blenderVersion =  $blenderVersionArray[1] & "." & $blenderVersionArray[2]
    Else
-	  $blenderVersion =  $blenderVersionArray[1] & "." & $blenderVersionArray[2] & $blenderVersionArray [3]
+	  $blenderVersion =  $blenderVersionArray[1] & "." & $blenderVersionArray[2]
    EndIf
 
    If $blenderVersionArray[2] == 0 and $blenderVersionArray[3] > 0 Then
