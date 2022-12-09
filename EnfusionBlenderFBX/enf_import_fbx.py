@@ -31,11 +31,15 @@ try:
         if ext == ".fbx":
             bpy.ops.import_scene.fbx(filepath=f, **args_fbx)
             bpy.context.scene['enfusion_filepath'] = f
-            bpy.context.scene.xob_meta_path = f.lower().replace("fbx","xob") + ".meta"
+            try:
+                bpy.context.scene.xob_meta_path = f.lower().replace("fbx","xob") + ".meta"
+            except:
+                print("failed to add meta file to scene")
         else:
             print("Extension %r is not known!" % ext)
 
 
     bpy.ops.view3d.ebt_sort()
-except:
+except Exception as e:
+    print("ecountered error during export: " + str(e))
     argv = ""

@@ -88,11 +88,12 @@ WEnd
 
 Func FindPaths()
    ; Look for Blender exe
-   $blenderPath = RegRead("HKEY_CLASSES_ROOT\Applications\blender.exe\shell\open\command", "")
+   $blenderPath = RegRead("HKEY_CLASSES_ROOT\blendfile\shell\open\command", "")
    If Not $blenderPath = "" Then
 	  $blenderPath = StringRegExp($blenderPath, '["''].*?["'']|[^ ]+', $STR_REGEXPARRAYGLOBALMATCH)
 	  $blenderPath = $blenderPath[0]
 	  $blenderPath = StringReplace($blenderPath, '"', '')
+	  $blenderPath = StringReplace($blenderPath, 'blender-launcher.exe', 'blender.exe')
 	  GUICtrlSetData($Input_FolderBlender,$blenderPath, "")
    EndIf
 
