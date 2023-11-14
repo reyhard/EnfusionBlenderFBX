@@ -31,7 +31,7 @@ class EnfusionFBXTools_ExportFBX(Operator):
                 filepath=exportPath,
                 my_fbx_version='FBX201400',
                 use_animation=False,
-                my_scale=100/(bpy.context.preferences.addons["EnfusionBlenderFBX"].preferences.scalefactor),
+                my_scale=1/(bpy.context.preferences.addons["EnfusionBlenderFBX"].preferences.scalefactor),
                 use_optimize_for_game_engine=False,
                 use_ignore_armature_node=True)
                 

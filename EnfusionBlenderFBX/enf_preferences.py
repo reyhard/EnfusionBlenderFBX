@@ -1,7 +1,7 @@
 import bpy
 import configparser
 from bpy.types import Operator, AddonPreferences
-from bpy.props import StringProperty, IntProperty, BoolProperty
+from bpy.props import StringProperty, FloatProperty, BoolProperty
 
 from .enf_export_fbx import EnfusionFBXTools_ExportFBX 
 
@@ -18,7 +18,7 @@ class EnfusionToolsPreferences(AddonPreferences):
     bl_label = "Enfusion FBX Tools preferences"         # Display name in the interface.
     bl_options = {'REGISTER'}  # Enable undo for the operator.
 
-    scalefactor: IntProperty(
+    scalefactor: FloatProperty(
             name="Scale",
             default=1,
             )
