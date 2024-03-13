@@ -1,4 +1,5 @@
 import bpy
+import os
 from bpy.types import Operator
 from EnfusionBlenderTools.utils import show_message_box
 
@@ -14,8 +15,10 @@ class EnfusionFBXTools_ExportFBX(Operator):
         # Show pop up window if FBX file path is missing
         try:
             exportPath = bpy.context.scene['enfusion_filepath']
+            if not os.path.exists(exportPath):
+                raise
         except:
-            msg = 'Quick export function needs path to existing FBX file!'
+            msg = 'Quick export function needs valid path to existing FBX file!'
             bpy.ops.exportenfusion.message('INVOKE_DEFAULT', message = msg) 
             return {'CANCELLED'} 
         
