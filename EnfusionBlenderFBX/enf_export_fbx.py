@@ -1,7 +1,13 @@
 import bpy
 import os
 from bpy.types import Operator
-from EnfusionBlenderTools.utils import show_message_box
+
+def show_message_box(messageArray, title="Enfusion FBX Tools", icon='INFO'):
+    def draw(self, context):
+        for message in messageArray:
+            self.layout.label(text=message)
+
+    bpy.context.window_manager.popup_menu(draw, title=title, icon=icon)
 
 class EnfusionFBXTools_ExportFBX(Operator):
     """Script to export existing file to Workbench"""      # Use this as a tooltip for menu items and buttons.
