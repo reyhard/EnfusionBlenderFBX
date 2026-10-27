@@ -1,7 +1,7 @@
 import bpy
 import configparser
 from bpy.types import Operator, AddonPreferences
-from bpy.props import StringProperty, IntProperty, BoolProperty
+from bpy.props import StringProperty, IntProperty, BoolProperty, EnumProperty
 
 from .enf_export_fbx import EnfusionFBXTools_ExportFBX 
 
@@ -9,6 +9,39 @@ from .enf_export_fbx import EnfusionFBXTools_ExportFBX
 import rna_keymap_ui
 # store keymaps here to access after registration
 addon_keymaps = []
+
+
+def _matching_keymaps():
+    """Yield this add-on's quick-export shortcuts from Blender's add-on map."""
+    keyconfig = bpy.context.window_manager.keyconfigs.addon
+    if not keyconfig:
+        return
+    for keymap in keyconfig.keymaps:
+        for keymap_item in keymap.keymap_items:
+            if (
+                keymap_item.idname == EnfusionFBXTools_ExportFBX.bl_idname
+                and keymap_item.type == 'S'
+                and keymap_item.value == 'PRESS'
+                and keymap_item.ctrl
+                and keymap_item.shift
+            ):
+                yield keymap, keymap_item
+
+
+def _ensure_keymap():
+    existing = list(_matching_keymaps())
+    if existing:
+        addon_keymaps[:] = existing
+        return
+
+    wm = bpy.context.window_manager
+    keyconfig = wm.keyconfigs.addon
+    if keyconfig:
+        keymap = keyconfig.keymaps.new(name='Window', space_type='EMPTY')
+        keymap_item = keymap.keymap_items.new(
+            EnfusionFBXTools_ExportFBX.bl_idname, 'S', 'PRESS', ctrl=True, shift=True
+        )
+        addon_keymaps[:] = [(keymap, keymap_item)]
 
 class EnfusionToolsPreferences(AddonPreferences):
     # this must match the addon name, use '__package__'
@@ -26,6 +59,16 @@ class EnfusionToolsPreferences(AddonPreferences):
             name="Use Better FBX",
             default=False,
             )
+    import_mode: EnumProperty(
+            name="FBX Importer",
+            description="Automatic uses EBT when Workbench is ready, otherwise Blender's native FBX importer",
+            items=[
+                ('AUTOMATIC', "Automatic", "Use EBT when Workbench is ready; otherwise native Blender import"),
+                ('EBT', "EBT only", "Require Enfusion Blender Tools and a ready Workbench"),
+                ('BLENDER', "Blender only", "Always use Blender's native FBX importer and local sorting"),
+            ],
+            default='AUTOMATIC',
+            )
 
     def draw(self, context):
         layout = self.layout
@@ -33,6 +76,7 @@ class EnfusionToolsPreferences(AddonPreferences):
         row = layout.row()
         layout.prop(self, "scalefactor")
         layout.prop(self, "export_better_fbx")
+        layout.prop(self, "import_mode")
 
         layout.label(text="Keybinding")
         col = layout.column()
@@ -44,21 +88,21 @@ class EnfusionToolsPreferences(AddonPreferences):
 
         # Add options if keymap is empty
         if addon_keymaps == []:
-            wm = bpy.context.window_manager
-            kc = wm.keyconfigs.addon
-            if kc:
-                km = wm.keyconfigs.addon.keymaps.new(name='Window', space_type='EMPTY')
-                kmi = km.keymap_items.new(EnfusionFBXTools_ExportFBX.bl_idname, 'S', 'PRESS', ctrl=True, shift=True)
-                addon_keymaps.append((km, kmi))
+            _ensure_keymap()
                 
     @classmethod
     def register(cls):
-        wm = bpy.context.window_manager
-        kc = wm.keyconfigs.addon
-        if kc:
-            km = wm.keyconfigs.addon.keymaps.new(name='Window', space_type='EMPTY')
-            kmi = km.keymap_items.new(EnfusionFBXTools_ExportFBX.bl_idname, 'S', 'PRESS', ctrl=True, shift=True)
-            addon_keymaps.append((km, kmi))
+        _ensure_keymap()
+
+
+def unregister():
+    """Remove add-on keymaps so reloads do not leave duplicate shortcuts."""
+    for km, kmi in list(_matching_keymaps()):
+        try:
+            km.keymap_items.remove(kmi)
+        except (ReferenceError, RuntimeError, ValueError):
+            pass
+    addon_keymaps.clear()
 
 def save_settings(name, property):
     config = configparser.ConfigParser()
